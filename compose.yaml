@@ -6,6 +6,10 @@ services:
     image: rutven/test-backend
     environment:
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://backend-db:5432/quarkus
+      - QUARKUS_DATASOURCE_USERNAME=quarkus
+      - QUARKUS_DATASOURCE_PASSWORD=/run/secrets/db_password
+    secrets:
+      - db_password
     ports:
       - "8080:8080"
     depends_on:
@@ -18,7 +22,9 @@ services:
     image: "postgres:15.4"
     environment:
       - POSTGRES_USER=quarkus
-      - POSTGRES_PASSWORD=quarkus
+      - POSTGRES_PASSWORD=/run/secrets/db_password
+    secrets:
+      - db_password
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U quarkus"]
       interval: 10s
@@ -29,6 +35,10 @@ services:
       - "5432:5432"
     networks:
       - backend-net
+
+secrets:
+  db_password:
+    file: secrets/db_password.txt
 
 networks:
   backend-net:
